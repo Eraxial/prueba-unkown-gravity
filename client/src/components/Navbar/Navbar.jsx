@@ -50,9 +50,9 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-
   const handleLogout = () => {
     dispatch(logout());
+    localStorage.removeItem('token')
   };
 
   return (
@@ -80,7 +80,7 @@ export default function Navbar() {
               </HStack>
             </HStack>
             <Flex alignItems={"center"}>
-              {user && (
+              {user.user_id !== "" && (
                 <Menu>
                   <MenuButton
                     as={Button}
@@ -99,7 +99,7 @@ export default function Navbar() {
                   </MenuList>
                 </Menu>
               )}
-              {!user && (
+              {user.user_id === "" && (
                 <ButtonGroup>
                   <Button
                     colorScheme="teal"

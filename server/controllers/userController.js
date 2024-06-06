@@ -1,6 +1,8 @@
 const db = require("../config/db");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 class UserController {
   getAllUsers = async (req, res) => {
@@ -11,6 +13,22 @@ class UserController {
     });
     res.send(usuarios);
   };
+
+  getUser = async (req, res) => {
+    try {
+      const {user_id} = req.params;
+      console.log(user_id)
+      const user = await User.findAll({
+        where: {
+          user_id: user_id,
+        },
+      });
+      res.status(200).json(user[0])
+
+    }catch(error){
+      res.status(500).json(error)
+    }
+  }
 
   createUser = async (req, res) => {
     try {
@@ -61,15 +79,29 @@ class UserController {
         email: email
       }
     })
+    if (user.length !== 0){
+      const verifiedPass = await bcrypt.compare(password, user[0].password);
+      if (verifiedPass) {
+        const token = jwt.sign({
+          user_id: user[0].user_id
+        },
+          process.env.TOKEN_SECRET,
+          {
+            expiresIn: '1d'
+          }
+        )
+        console.log(token)
+        res.status(200).json({msg: 'Token enviado', token: token})
+      }
+    }
 
-    const verifiedPass = await bcrypt.compare(password, user[0].password);
-
+    
     //todo
       //generar token 
       //enviarlo al front
       //que el front lo verifique y que cambie el estado de user al usuario del token
     }catch(error) {
-      throw new Error(error)
+      res.status(500).json(error)
     }
   }
 }

@@ -2,15 +2,13 @@ import { Box, Container, Grid } from "@chakra-ui/react"
 import { useEffect, useState } from 'react'
 import axios from 'axios';
 import { AppCard } from "../../components/Card/AppCard";
-import { useDispatch, useSelector } from "react-redux";
-import { addUser, logout } from "../../store/userSlice";
+import { useSelector } from "react-redux";
 
 
 export const Home = () => {
 
   const [books, setBooks] = useState()
   const user = useSelector((state) => state.user);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     axios
@@ -19,13 +17,10 @@ export const Home = () => {
       .catch(err => console.log(err))
   }, [])
 
-
-  console.log(books)
-
   return (
     <main>
       <Container maxW='8xl'>
-        {user && <Box>
+        {user.user_id !== "" && <Box>
           <ul>
             <li>user_id:{user.user_id}</li>
             <li>email:{user.email}</li>
