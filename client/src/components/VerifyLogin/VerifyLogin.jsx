@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Center, Heading, Text } from "@chakra-ui/react";
 import {
   Button,

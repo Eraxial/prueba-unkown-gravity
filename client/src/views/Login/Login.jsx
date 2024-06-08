@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Flex,
   Heading,
@@ -17,7 +17,6 @@ import { useDispatch } from "react-redux";
 import { addUser } from "../../store/userSlice";
 import { useNavigate } from "react-router-dom";
 import VerifyLogin from "../../components/VerifyLogin/VerifyLogin";
-import Utils from "../../../utils/js/utils";
 
 const initialState = {
   email: "",
@@ -55,7 +54,7 @@ const Login = () => {
 
   console.log(code);
   // Método que verifica el codigo y logea al usuario
-  const handleSubmit = e => {
+  const handleSubmit = () => {
     if (
       (code.number1 === verificationCode[0] &&
         code.number2 === verificationCode[1] &&
