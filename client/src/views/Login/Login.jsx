@@ -54,7 +54,7 @@ const Login = () => {
   };
 
   console.log(code);
-
+  // Método que verifica el codigo y logea al usuario
   const handleSubmit = e => {
     if (
       (code.number1 === verificationCode[0] &&
@@ -63,7 +63,8 @@ const Login = () => {
         code.number4 === verificationCode[3]) ||
       code.number1 === verificationCode
     ) {
-      //Conexión con la base de datos
+      setErrorMsg();
+      //Conexión con la base de datos para traer la información del usuario
       axios
         .post("http://localhost:3000/users/login", user)
         .then(res => {
@@ -89,7 +90,8 @@ const Login = () => {
                 localStorage.setItem("token", token);
                 setShowLogin(true);
                 navigate("/");
-              });
+              })
+              .catch(err => console.log(err));
           }
         })
         .catch(err => {
@@ -97,6 +99,8 @@ const Login = () => {
           setErrorMsg(err.response.data);
           setShowLogin(true);
         });
+    } else {
+      setErrorMsg("El código no es correcto");
     }
   };
 
@@ -124,6 +128,7 @@ const Login = () => {
             .catch(err => console.log(err));
           // Cambiamos de ventana a la de verificación de los dígitos
           setShowLogin(false);
+          setErrorMsg();
         })
         .catch(err => {
           console.log(err);
@@ -188,6 +193,7 @@ const Login = () => {
           handleSubmit={handleSubmit}
           code={code}
           setCode={setCode}
+          errorMsg={errorMsg}
         />
       )}
     </Flex>

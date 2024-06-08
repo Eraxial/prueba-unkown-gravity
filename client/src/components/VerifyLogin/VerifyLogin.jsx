@@ -1,4 +1,4 @@
-import { Center, Heading } from "@chakra-ui/react";
+import { Center, Heading, Text } from "@chakra-ui/react";
 import {
   Button,
   FormControl,
@@ -9,7 +9,13 @@ import {
 } from "@chakra-ui/react";
 import { PinInput, PinInputField } from "@chakra-ui/react";
 
-export default function VerifyLogin({ email, handleSubmit, code, setCode }) {
+export default function VerifyLogin({
+  email,
+  handleSubmit,
+  code,
+  setCode,
+  errorMsg,
+}) {
   const formBackground = useColorModeValue("gray.100", "gray.700");
 
   const handleChange = e => {
@@ -80,6 +86,11 @@ export default function VerifyLogin({ email, handleSubmit, code, setCode }) {
             </HStack>
           </Center>
         </FormControl>
+        {errorMsg && (
+          <Text textAlign="center" mb={3} color="tomato">
+            {errorMsg}
+          </Text>
+        )}
         <Stack spacing={6}>
           <Button colorScheme="teal" onClick={handleSubmit}>
             Verify
