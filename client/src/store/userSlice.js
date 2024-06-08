@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { useDispatch } from "react-redux";
 
 let initialState = {
   user_id: "",

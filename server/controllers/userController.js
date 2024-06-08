@@ -2,10 +2,14 @@ const db = require("../config/db");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { sendVerificationEmail } = require("../services/sendVerificationMail");
+const {
+  sendVerificationEmail,
+  sendVerificationLoginEmail,
+} = require("../services/sendVerificationMail");
 require("dotenv").config();
 
 class UserController {
+  // Método que trae la información de todos los usuarios
   getAllUsers = async (req, res) => {
     const usuarios = await User.findAll({
       where: {
@@ -15,6 +19,7 @@ class UserController {
     res.send(usuarios);
   };
 
+  // Método que trae la informaicón de un usuario
   getUser = async (req, res) => {
     try {
       const { user_id } = req.params;
@@ -48,6 +53,7 @@ class UserController {
     }
   };
 
+  //Método que registra un usuario pero no lo verifica
   registerUser = async (req, res) => {
     try {
       //Traemos los datos del formulario de registro
@@ -93,6 +99,7 @@ class UserController {
     }
   };
 
+  //Método que verifica un usuario recién registrado.
   verifyUser = async (req, res) => {
     // Recogemos el token que nos envía el front
     const { token } = req.body;
@@ -126,6 +133,7 @@ class UserController {
     }
   };
 
+  //Método que permite loguear un usuario
   login = async (req, res) => {
     const { email, password } = req.body;
 
@@ -157,6 +165,12 @@ class UserController {
     } catch (error) {
       console.log(user[0]);
     }
+  };
+
+  verifyLogin = async (req, res) => {
+    const { code, email } = req.body;
+    console.log(email);
+    sendVerificationLoginEmail(email, code);
   };
 }
 
