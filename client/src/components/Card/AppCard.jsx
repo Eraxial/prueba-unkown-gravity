@@ -11,8 +11,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-export const AppCard = ({book}) => {
-  
+export const AppCard = ({ book }) => {
   return (
     <Card maxW="300px">
       <CardBody>
