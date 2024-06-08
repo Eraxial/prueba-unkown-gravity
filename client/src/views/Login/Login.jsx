@@ -9,6 +9,7 @@ import {
   Switch,
   useColorMode,
   useColorModeValue,
+  Text,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
@@ -25,6 +26,7 @@ const Login = () => {
   const { toggleColorMode } = useColorMode();
   const formBackground = useColorModeValue("gray.100", "gray.700");
   const [user, setUser] = useState(initialState);
+  const [errorMsg, setErrorMsg] = useState("hello");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -85,6 +87,7 @@ const Login = () => {
           mb={3}
           onChange={handleChange}
         />
+        {errorMsg && <Text className="error-message">{errorMsg}</Text>}
         <Button colorScheme="teal" mb={8} onClick={handleSubmit}>
           Log In
         </Button>

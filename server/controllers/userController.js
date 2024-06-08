@@ -127,14 +127,15 @@ class UserController {
   };
 
   login = async (req, res) => {
+    const { email, password } = req.body;
+
     try {
-      const { email, password } = req.body;
       const user = await User.findAll({
         where: {
           email: email,
         },
       });
-      if (user.length !== 0) {
+      if (user[0].is_verified === true && user[0].is_deleted === false) {
         const verifiedPass = await bcrypt.compare(password, user[0].password);
         if (verifiedPass) {
           const token = jwt.sign(
@@ -146,12 +147,15 @@ class UserController {
               expiresIn: "1d",
             }
           );
-          console.log(token);
           res.status(200).json({ msg: "Token enviado", token: token });
         }
+      } else if (user[0].is_verified === false) {
+        res.status(401).json("El usuario no está verificado");
+      } else {
+        res.status(404).json("No se ha encontrado usuario");
       }
     } catch (error) {
-      res.status(500).json(error);
+      console.log(user[0]);
     }
   };
 }

@@ -12,7 +12,7 @@ let initialState = {
 const token = localStorage.getItem("token");
 if (token) {
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  const user_id = jwt(token);
+  const user_id = jwtDecode(token);
   console.log(token);
   await axios
     .get(`http://localhost:3000/users/${user_id.user_id}`)
