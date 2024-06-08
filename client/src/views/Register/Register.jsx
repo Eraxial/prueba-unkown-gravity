@@ -35,7 +35,7 @@ const Register = () => {
         {
           console.log(res);
           if(res.status === 200) {
-            navigate('/login')
+            /* navigate('/login') */
           }
         })
       .catch(err => console.log(err))

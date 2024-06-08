@@ -46,13 +46,13 @@ const NavLink = ({ children }) => {
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const user = useSelector((state) => state.user);
+  const user = useSelector(state => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     dispatch(logout());
-    localStorage.removeItem('token')
+    localStorage.removeItem("token");
   };
 
   return (
@@ -74,7 +74,7 @@ export default function Navbar() {
                 spacing={4}
                 display={{ base: "none", md: "flex" }}
               >
-                {Links.map((link) => (
+                {Links.map(link => (
                   <NavLink key={link}>{link}</NavLink>
                 ))}
               </HStack>
@@ -104,11 +104,15 @@ export default function Navbar() {
                   <Button
                     colorScheme="teal"
                     variant="ghost"
-                    onClick={() => navigate('/login')}
+                    onClick={() => navigate("/login")}
                   >
                     Login
                   </Button>
-                  <Button colorScheme="teal" variant="solid" onClick={() => navigate('/register')}>
+                  <Button
+                    colorScheme="teal"
+                    variant="solid"
+                    onClick={() => navigate("/register")}
+                  >
                     Register
                   </Button>
                 </ButtonGroup>
@@ -120,7 +124,7 @@ export default function Navbar() {
         {isOpen ? (
           <Box pb={4} display={{ md: "none" }}>
             <Stack as={"nav"} spacing={4}>
-              {Links.map((link) => (
+              {Links.map(link => (
                 <NavLink key={link}>{link}</NavLink>
               ))}
             </Stack>
