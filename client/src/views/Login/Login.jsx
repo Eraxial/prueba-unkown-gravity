@@ -56,12 +56,12 @@ const Login = () => {
   console.log(code);
 
   const handleSubmit = e => {
-    // setShowLogin(true);
     if (
-      code.number1 === verificationCode[0] &&
-      code.number2 === verificationCode[1] &&
-      code.number3 === verificationCode[2] &&
-      code.number4 === verificationCode[3]
+      (code.number1 === verificationCode[0] &&
+        code.number2 === verificationCode[1] &&
+        code.number3 === verificationCode[2] &&
+        code.number4 === verificationCode[3]) ||
+      code.number1 === verificationCode
     ) {
       //Conexión con la base de datos
       axios
@@ -87,6 +87,7 @@ const Login = () => {
 
                 //Metemos el token en el localStorage para que si salimos de la web sigamos conectados.
                 localStorage.setItem("token", token);
+                setShowLogin(true);
                 navigate("/");
               });
           }
@@ -94,21 +95,41 @@ const Login = () => {
         .catch(err => {
           console.log(err);
           setErrorMsg(err.response.data);
+          setShowLogin(true);
         });
     }
   };
 
+  // Método que busca el usuario y le envía un email
   const sendVerificationMail = () => {
-    setShowLogin(false);
-    const verification = generate4DigitsCode();
-    setVerificationCode(verification);
-    axios
-      .post("http://localhost:3000/users/verifyLogin", {
-        code: verification,
-        email: user.email,
-      })
-      .then(res => console.log(res))
-      .catch(err => console.log(err));
+    // Mensaje de error si no se rellenan datos
+    if (user.email === "" || user.password === "") {
+      setErrorMsg("Debes rellenar todos los campos");
+    } else {
+      // Generamos el codigo de verificación de 4 dígitos
+      const verification = generate4DigitsCode();
+      setVerificationCode(verification);
+
+      //Buscamos en la base de datos si existe el usuario en la base de datos
+      axios
+        .post(`http://localhost:3000/users/checkUser`, user)
+        .then(() => {
+          // En caso de exisitir el usuario se envía el codigo de verificación
+          axios
+            .post("http://localhost:3000/users/verifyLogin", {
+              code: verification,
+              email: user.email,
+            })
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
+          // Cambiamos de ventana a la de verificación de los dígitos
+          setShowLogin(false);
+        })
+        .catch(err => {
+          console.log(err);
+          setErrorMsg(err.response.data);
+        });
+    }
   };
 
   return (
