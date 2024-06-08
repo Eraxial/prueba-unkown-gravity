@@ -35,6 +35,40 @@ class UserController {
     }
   };
 
+  //Método que chequea si existe el usuario en la base de datos
+  checkUser = async (req, res) => {
+    const { email, password } = req.body;
+
+    //Buscamos el email en la base de datos
+    try {
+      const user = await User.findAll({
+        where: {
+          email: email,
+        },
+      });
+      const verifiedPass = await bcrypt.compare(password, user[0].password);
+      // Error por si no existe el usuario
+      if (user.length === 0) {
+        res.status(404).json("Credenciales incorrectas");
+        // Error por si el usuario está eliminado
+      } else if (user[0].is_deleted === 1) {
+        res.status(404).json("Credenciales incorrectas");
+        // Error por si el usuario no está verificado
+      } else if (user[0].is_verified === 0) {
+        res.status(401).json("Usuario no verificado");
+        // Error si la contraseña no existe
+      } else if (!verifiedPass) {
+        res.status(404).json("Credenciales incorrectas");
+        // Mandamos respuesta si se encuentra usuario para pasar al siguiente paso
+      } else {
+        res.status(200).json("Existe usuario");
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json("Credenciales incorrectas");
+    }
+  };
+
   createUser = async (req, res) => {
     try {
       const maxId = await User.max("user_id");
