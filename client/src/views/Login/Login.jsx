@@ -26,7 +26,7 @@ const Login = () => {
   const { toggleColorMode } = useColorMode();
   const formBackground = useColorModeValue("gray.100", "gray.700");
   const [user, setUser] = useState(initialState);
-  const [errorMsg, setErrorMsg] = useState("hello");
+  const [errorMsg, setErrorMsg] = useState();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -49,6 +49,7 @@ const Login = () => {
           axios
             .get(`http://localhost:3000/users/${user_id.user_id}`)
             .then(res => {
+              setErrorMsg();
               console.log(res.data);
               dispatch(addUser(res.data));
               localStorage.setItem("token", token);
@@ -56,7 +57,10 @@ const Login = () => {
             });
         }
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        setErrorMsg(err.response.data);
+      });
   };
 
   return (
@@ -87,7 +91,11 @@ const Login = () => {
           mb={3}
           onChange={handleChange}
         />
-        {errorMsg && <Text className="error-message">{errorMsg}</Text>}
+        {errorMsg && (
+          <Text mb={3} color="tomato">
+            {errorMsg}
+          </Text>
+        )}
         <Button colorScheme="teal" mb={8} onClick={handleSubmit}>
           Log In
         </Button>
