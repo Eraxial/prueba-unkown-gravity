@@ -1,8 +1,8 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const booksController = require('../controllers/booksController')
+const booksController = require("../controllers/booksController");
 
-/* GET users listing. */
-router.get('/', booksController.getAllBooks)
+// Ruta para leer todos los libros
+router.get("/", booksController.getAllBooks);
 
 module.exports = router;

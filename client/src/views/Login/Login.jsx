@@ -4,10 +4,6 @@ import {
   Heading,
   Input,
   Button,
-  FormControl,
-  FormLabel,
-  Switch,
-  useColorMode,
   useColorModeValue,
   Text,
 } from "@chakra-ui/react";
@@ -36,7 +32,6 @@ const generate4DigitsCode = () => {
 };
 
 const Login = () => {
-  const { toggleColorMode } = useColorMode();
   const formBackground = useColorModeValue("gray.100", "gray.700");
   const [user, setUser] = useState(initialState);
   const [errorMsg, setErrorMsg] = useState();
@@ -145,6 +140,7 @@ const Login = () => {
           p={12}
           borderRadius={8}
           boxShadow="lg"
+          justify="center"
         >
           <Heading mb={6}>Log In</Heading>
           <Input
@@ -173,17 +169,6 @@ const Login = () => {
           <Button colorScheme="teal" mb={8} onClick={sendVerificationMail}>
             Log In
           </Button>
-          <FormControl display="flex" alignItems="center">
-            <FormLabel htmlFor="dark_mode" mb="0">
-              Enable Dark Mode?
-            </FormLabel>
-            <Switch
-              id="dark_mode"
-              colorScheme="teal"
-              size="lg"
-              onChange={toggleColorMode}
-            />
-          </FormControl>
         </Flex>
       )}
       {!showLogin && (

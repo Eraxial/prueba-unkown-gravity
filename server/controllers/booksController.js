@@ -1,7 +1,7 @@
 const Book = require("../models/book");
 
 class BookController {
-  //Método que trae la información de todos los libros
+  //Método que trae la información de todos los libros en un array de objetos
   getAllBooks = async (req, res) => {
     try {
       const books = await Book.findAll();
