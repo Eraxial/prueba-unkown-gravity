@@ -87,7 +87,30 @@ export default function Navbar() {
                 ))}
               </HStack>
             </HStack>
-            <Flex alignItems={"center"}>
+            <Flex alignItems={"center"} gap={5}>
+              {colorMode === "dark" ? (
+                <SunIcon
+                  onClick={toggleColorMode}
+                  cursor="pointer"
+                  p={1.5}
+                  w="30px"
+                  h="30px"
+                  borderRadius="50%"
+                  transition={"background-color 0.3s ease, color 0.8s ease"}
+                  _hover={{ bg: "teal.200", color: "black" }}
+                />
+              ) : (
+                <MoonIcon
+                  onClick={toggleColorMode}
+                  cursor="pointer"
+                  p={1.5}
+                  w="30px"
+                  h="30px"
+                  borderRadius="50%"
+                  transition={"background-color 0.3s ease, color 0.8s ease"}
+                  _hover={{ bg: "teal.500", color: "white" }}
+                />
+              )}
               {user.user_id !== "" && (
                 <Menu>
                   <MenuButton
@@ -107,31 +130,9 @@ export default function Navbar() {
                   </MenuList>
                 </Menu>
               )}
+
               {user.user_id === "" && (
                 <ButtonGroup alignItems="center">
-                  {colorMode === "dark" ? (
-                    <SunIcon
-                      onClick={toggleColorMode}
-                      cursor="pointer"
-                      p={1.5}
-                      w="30px"
-                      h="30px"
-                      borderRadius="50%"
-                      transition={"background-color 0.3s ease, color 0.8s ease"}
-                      _hover={{ bg: "teal.200", color: "black" }}
-                    />
-                  ) : (
-                    <MoonIcon
-                      onClick={toggleColorMode}
-                      cursor="pointer"
-                      p={1.5}
-                      w="30px"
-                      h="30px"
-                      borderRadius="50%"
-                      transition={"background-color 0.3s ease, color 0.8s ease"}
-                      _hover={{ bg: "teal.500", color: "white" }}
-                    />
-                  )}
                   <Button
                     colorScheme="teal"
                     variant="ghost"

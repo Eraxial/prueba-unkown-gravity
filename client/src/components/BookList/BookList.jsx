@@ -8,12 +8,14 @@ export const BookList = ({ books }) => {
     <Container maxW="8xl" pt={{ base: "64px", md: "0" }}>
       <Grid
         templateColumns={{
-          base: "minmax(0, 1fr)",
-          md: "repeat(2, minmax(0, 1fr))",
-          xl: "repeat(4, minmax(0, 1fr))",
+          base: "repeat(2, minmax(0, 1fr))",
+          md: "repeat(3, minmax(0, 1fr))",
+          lg: "repeat(4, minmax(0, 1fr))",
+          xl: "repeat(6, minmax(0, 1fr))",
         }}
         gap={5}
         justifyItems="center"
+        py={10}
       >
         {books &&
           books.map(book => {

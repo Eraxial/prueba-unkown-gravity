@@ -16,8 +16,6 @@ export const Searcher = ({ filter, onChange, search }) => {
   const inputColor = useColorModeValue("white", "gray.700");
   const { colorMode } = useColorMode();
 
-  console.log(filter);
-
   return (
     <Box bg="teal.400">
       <Container maxW="8xl">

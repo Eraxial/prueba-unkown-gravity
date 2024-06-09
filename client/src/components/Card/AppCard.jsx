@@ -4,19 +4,27 @@ import {
   Box,
   Card,
   CardBody,
-  CardFooter,
-  Heading,
+  Flex,
   Image,
   Stack,
   Text,
+  flexbox,
   useColorModeValue,
 } from "@chakra-ui/react";
 
 export const AppCard = ({ book }) => {
   const avatarBG = useColorModeValue("teal.300", "teal.500");
 
+  console.log(book);
+
   return (
-    <Card maxW="300px">
+    <Card
+      maxW="200px"
+      bg="none"
+      shadow="none"
+      transition={"transform 0.3s"}
+      _hover={{ transform: "scale(1.05)" }}
+    >
       <CardBody p={0}>
         <Box position="relative" role="group" transition="filter 0.5s">
           <Image
@@ -51,14 +59,15 @@ export const AppCard = ({ book }) => {
             bg={avatarBG}
           />
         </Box>
-        <Stack spacing="3" p="3">
-          <Heading size="sm">{book.name}</Heading>
+        <Stack gap={2} pt="2">
           <Text colorScheme="teal" fontSize="2xl">
-            100€
+            {book.price}€
+          </Text>
+          <Text colorScheme="teal" fontSize="lg">
+            {book.name}
           </Text>
         </Stack>
       </CardBody>
-      <CardFooter p="3"></CardFooter>
     </Card>
   );
 };
