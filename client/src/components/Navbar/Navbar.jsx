@@ -18,8 +18,9 @@ import {
   Stack,
   Container,
   ButtonGroup,
+  useColorMode,
 } from "@chakra-ui/react";
-import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, CloseIcon, SunIcon, MoonIcon } from "@chakra-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../store/userSlice";
 import { useNavigate } from "react-router-dom";
@@ -46,6 +47,7 @@ const NavLink = ({ children }) => {
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { colorMode, toggleColorMode } = useColorMode();
   const user = useSelector(state => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -106,7 +108,30 @@ export default function Navbar() {
                 </Menu>
               )}
               {user.user_id === "" && (
-                <ButtonGroup>
+                <ButtonGroup alignItems="center">
+                  {colorMode === "dark" ? (
+                    <SunIcon
+                      onClick={toggleColorMode}
+                      cursor="pointer"
+                      p={1.5}
+                      w="30px"
+                      h="30px"
+                      borderRadius="50%"
+                      transition={"background-color 0.3s ease, color 0.8s ease"}
+                      _hover={{ bg: "teal.200", color: "black" }}
+                    />
+                  ) : (
+                    <MoonIcon
+                      onClick={toggleColorMode}
+                      cursor="pointer"
+                      p={1.5}
+                      w="30px"
+                      h="30px"
+                      borderRadius="50%"
+                      transition={"background-color 0.3s ease, color 0.8s ease"}
+                      _hover={{ bg: "teal.500", color: "white" }}
+                    />
+                  )}
                   <Button
                     colorScheme="teal"
                     variant="ghost"
