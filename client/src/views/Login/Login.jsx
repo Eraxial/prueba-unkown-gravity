@@ -4,13 +4,8 @@ import {
   Heading,
   Input,
   Button,
-  FormControl,
-  FormLabel,
-  Switch,
-  useColorMode,
   useColorModeValue,
   Text,
-  color,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";

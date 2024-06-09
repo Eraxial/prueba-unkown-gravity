@@ -69,6 +69,7 @@ class UserController {
     }
   };
 
+  // Método de prueba que crea un usuario estándar para probar la base de datos
   createUser = async (req, res) => {
     try {
       const maxId = await User.max("user_id");
@@ -177,9 +178,12 @@ class UserController {
           email: email,
         },
       });
+
+      // Verificamos que el usuario se pueda logear
       if (user[0].is_verified === true && user[0].is_deleted === false) {
         const verifiedPass = await bcrypt.compare(password, user[0].password);
         if (verifiedPass) {
+          // Generamos token con el id del usuario
           const token = jwt.sign(
             {
               user_id: user[0].user_id,
@@ -189,6 +193,7 @@ class UserController {
               expiresIn: "1d",
             }
           );
+
           res.status(200).json({ msg: "Token enviado", token: token });
         }
       } else if (user[0].is_verified === false) {
