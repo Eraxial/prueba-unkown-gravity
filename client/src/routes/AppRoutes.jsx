@@ -11,7 +11,7 @@ export const AppRoutes = () => {
       <header>
         <Navbar />
       </header>
-      <main>
+      <main mt="85px">
         <Routes>
           <Route index path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

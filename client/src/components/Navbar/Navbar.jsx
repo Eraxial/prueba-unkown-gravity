@@ -57,7 +57,13 @@ export default function Navbar() {
 
   return (
     <>
-      <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
+      <Box
+        bg={useColorModeValue("gray.100", "gray.900")}
+        px={4}
+        position={{ base: "fixed", md: "static" }}
+        w="100%"
+        zIndex="100"
+      >
         <Container maxW="8xl">
           <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
             <IconButton
@@ -68,7 +74,7 @@ export default function Navbar() {
               onClick={isOpen ? onClose : onOpen}
             />
             <HStack spacing={8} alignItems={"center"}>
-              <Box>Logo</Box>
+              <Box onClick={() => navigate("/")}>Logo</Box>
               <HStack
                 as={"nav"}
                 spacing={4}
