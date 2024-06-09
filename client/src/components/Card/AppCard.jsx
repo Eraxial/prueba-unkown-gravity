@@ -4,18 +4,14 @@ import {
   Box,
   Card,
   CardBody,
-  Flex,
   Image,
   Stack,
   Text,
-  flexbox,
   useColorModeValue,
 } from "@chakra-ui/react";
 
 export const AppCard = ({ book }) => {
   const avatarBG = useColorModeValue("teal.300", "teal.500");
-
-  console.log(book);
 
   return (
     <Card

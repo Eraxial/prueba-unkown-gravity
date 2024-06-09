@@ -1,83 +1,38 @@
 /* eslint-disable react/prop-types */
-import { ArrowBackIcon, ArrowLeftIcon, ChatIcon } from "@chakra-ui/icons";
+import {
+  ArrowBackIcon,
+  ArrowRightIcon,
+  ChatIcon,
+  Search2Icon,
+} from "@chakra-ui/icons";
 import {
   Avatar,
   Box,
   CloseButton,
   Flex,
+  Input,
+  InputGroup,
+  InputRightElement,
   Stack,
   Text,
   useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { Fragment, useState } from "react";
+import axios from "axios";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { format, parse } from "@formkit/tempo";
 
-const data = [
-  {
-    conversation: 1,
-    messages: [
-      {
-        message_id: 1,
-        user_id: 13,
-        receptor_user_id: 2,
-        text: "que pasaaaa",
-        send: Date.now(),
-      },
-      {
-        message_id: 2,
-        user_id: 2,
-        receptor_user_id: 13,
-        text: "que poaqui",
-        send: Date.now() + 1,
-      },
-    ],
-  },
-  {
-    conversation: 2,
-    messages: [
-      {
-        message_id: 1,
-        user_id: 13,
-        receptor_user_id: 2,
-        text: "Y estos dos?",
-        send: Date.now(),
-      },
-      {
-        message_id: 2,
-        user_id: 2,
-        receptor_user_id: 13,
-        text: "yo que se mari",
-        send: Date.now() + 1,
-      },
-    ],
-  },
-  {
-    conversation: 3,
-    messages: [
-      {
-        message_id: 1,
-        user_id: 13,
-        receptor_user_id: 2,
-        text: "conver 3?",
-        send: Date.now(),
-      },
-      {
-        message_id: 2,
-        user_id: 2,
-        receptor_user_id: 13,
-        text: "Sah",
-        send: Date.now() + 1,
-      },
-    ],
-  },
-];
 export const Chat = ({ show, onOpen, onClose }) => {
   const chatColors = useColorModeValue("teal.200", "teal.600");
   const [showConversation, setShowConversation] = useState(false);
   const [selectedConversation, setSelectedConversation] = useState();
+  const [chat, setChat] = useState();
+  const [message, setMessage] = useState("");
   const { colorMode } = useColorMode();
   const user = useSelector(state => state.user);
+
+  const messageContainerRef = useRef();
 
   const selectConversation = conv => {
     setSelectedConversation(conv);
@@ -89,7 +44,48 @@ export const Chat = ({ show, onOpen, onClose }) => {
     setSelectedConversation();
   };
 
+  const handleChange = event => {
+    setMessage(event.target.value);
+  };
+
+  const sendMessage = event => {
+    if (messageContainerRef.current) {
+      messageContainerRef.current.scrollTop =
+        messageContainerRef.current.scrollHeight;
+    }
+
+    if (event.key === "Enter") {
+      const l = "en";
+      const t = new Date();
+      const now = format(t, "YYYY-MM-DDTHH:mm:ss", l);
+
+      const msg = {
+        conversation_id: selectedConversation.conversation_id,
+        message_id: selectedConversation.messages.length + 1,
+        receptor_user_id: 4,
+        send_date: now,
+        text: message,
+        user_id: user.user_id,
+      };
+
+      setSelectedConversation({
+        ...selectedConversation,
+        messages: [...selectedConversation.messages, msg],
+      });
+      setMessage("");
+    }
+  };
+
+  //Traemos las conversaciones desde la base de datos
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3000/chat/${user.user_id}`)
+      .then(res => setChat(res.data))
+      .catch(err => console.log(err));
+  }, []);
+
   return (
+    // Esto muestra un icono que ponemos fixed en la parte de abajo de la web de facil acceso
     <Fragment>
       {!show && (
         <Box
@@ -105,6 +101,8 @@ export const Chat = ({ show, onOpen, onClose }) => {
           <ChatIcon boxSize="2em" color="white" />
         </Box>
       )}
+
+      {/* Al pulsar en el botón nos muestra una ventanita con el chat */}
       {show && (
         <Box
           position="fixed"
@@ -113,8 +111,6 @@ export const Chat = ({ show, onOpen, onClose }) => {
           w="300px"
           h="400px"
           borderRadius="7px"
-          border="1px"
-          borderColor={colorMode === "dark" ? "gray.700" : "teal.100"}
         >
           <Box>
             <Flex
@@ -128,6 +124,7 @@ export const Chat = ({ show, onOpen, onClose }) => {
               </Text>
               <CloseButton onClick={onClose} />
             </Flex>
+            {/* Si no tenemos conversaciones seleccionadas nos aparece en la ventana las conversaciones que tenemos abiertas hasta el momento */}
             {!showConversation && (
               <Stack
                 py={2}
@@ -138,10 +135,10 @@ export const Chat = ({ show, onOpen, onClose }) => {
                 minH="351px"
                 borderRadius="0 0 8px 8px"
               >
-                {data.map(conv => {
+                {chat?.map(conv => {
                   return (
                     <Box
-                      key={conv.conversation}
+                      key={conv.conversation_id}
                       mx={2}
                       px={2}
                       py={2}
@@ -149,17 +146,24 @@ export const Chat = ({ show, onOpen, onClose }) => {
                       bg="gray"
                       onClick={() => selectConversation(conv)}
                     >
-                      {conv.conversation}
+                      {conv.conversation_id}
                     </Box>
                   );
                 })}
               </Stack>
             )}
+
+            {/* Al seleccionar una conversación, se nos abre dicha conversación con el historial de chats */}
             {showConversation && (
               <Stack
+                ref={messageContainerRef}
                 p={2}
                 bg={colorMode === "dark" ? "gray.700" : "white"}
-                minH="352px"
+                h="352px"
+                overflowY="auto"
+                gap={2}
+                position="relative"
+                borderRadius="0 0 8px 8px"
               >
                 <Box
                   _hover={{ bg: "tomato" }}
@@ -177,20 +181,38 @@ export const Chat = ({ show, onOpen, onClose }) => {
                     onClick={closeChat}
                   />
                 </Box>
+                {/* Aquí listamos todos los mensajes del usuario  */}
                 {selectedConversation?.messages.map(mess => {
                   return (
                     <Flex
                       key={mess.message_id}
+                      justifyContent="flex-start"
+                      alignItems="center"
                       flexDirection={
                         mess.user_id === user.user_id ? "row-reverse" : "row"
                       }
-                      gap={2}
+                      gap={3}
+                      p={2}
+                      bg="teal.500"
+                      borderRadius="3xl"
                     >
                       <Avatar size="xs" />
-                      <Text>{mess.text}</Text>
+                      <Text textAlign="end">{mess.text}</Text>
                     </Flex>
                   );
                 })}
+                <InputGroup position="sticky" bottom={0} w="100%">
+                  <InputRightElement pointerEvents="none">
+                    <ArrowRightIcon color="gray.300" />
+                  </InputRightElement>
+                  <Input
+                    name="message"
+                    value={message}
+                    onChange={handleChange}
+                    onKeyUp={sendMessage}
+                    bg={colorMode === "dark" ? "gray.700" : "white"}
+                  />
+                </InputGroup>
               </Stack>
             )}
           </Box>
