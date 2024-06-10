@@ -23,7 +23,6 @@ class UserController {
   getUser = async (req, res) => {
     try {
       const { user_id } = req.params;
-      console.log(user_id);
       const user = await User.findAll({
         where: {
           user_id: user_id,
@@ -102,9 +101,6 @@ class UserController {
       if (maxId === null) {
         maxId = 1;
       }
-
-      console.log(maxId);
-
       // Creamos el token con el id del usuario que será 1 mayor que el id maximo que hemos traido
       const token = jwt.sign(
         {

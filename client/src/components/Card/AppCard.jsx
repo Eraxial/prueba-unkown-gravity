@@ -11,9 +11,11 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { useSelector } from "react-redux";
 
 export const AppCard = ({ book, onClick }) => {
   const avatarBG = useColorModeValue("teal.300", "teal.500");
+  const user = useSelector(state => state.user);
   return (
     <Card
       maxW="200px"
@@ -65,13 +67,16 @@ export const AppCard = ({ book, onClick }) => {
               {book.name}
             </Text>
           </Stack>
-          <ChatIcon
-            _hover={{ transform: "scale(1.2)" }}
-            _active={{ transform: "scale(1)" }}
-            cursor="pointer"
-            transition={"transform 0.2s"}
-            onClick={() => onClick(book.user_id)}
-          />
+          {book.user_id !== user.user_id && user.user_id !== "" && (
+            <ChatIcon
+              _hover={{ transform: "scale(1.2)" }}
+              _active={{ transform: "scale(1)" }}
+              cursor="pointer"
+              transition={"transform 0.2s"}
+              onClick={() => onClick(book.user_id)}
+              boxSize={5}
+            />
+          )}
         </Flex>
       </CardBody>
     </Card>

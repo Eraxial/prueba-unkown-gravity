@@ -12,6 +12,7 @@ const Conversation = db.define(
 
     user_id: {
       type: DataTypes.TINYINT,
+      primaryKey: true,
       references: {
         model: User,
         key: "user_id",
@@ -20,9 +21,10 @@ const Conversation = db.define(
 
     receptor_user_id: {
       type: DataTypes.TINYINT,
+      primaryKey: true,
       references: {
         model: User,
-        key: "user_id",
+        key: "receptor_user_id",
       },
     },
   },

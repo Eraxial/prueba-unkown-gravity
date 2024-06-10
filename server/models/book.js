@@ -49,4 +49,8 @@ const Book = db.define(
   }
 );
 
+Book.associate = models => {
+  Book.belongsTo(models.User, { foreignKey: "user_id" });
+};
+
 module.exports = Book;
