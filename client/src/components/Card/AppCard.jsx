@@ -1,18 +1,19 @@
 /* eslint-disable react/prop-types */
+import { ChatIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Box,
   Card,
   CardBody,
+  Flex,
   Image,
   Stack,
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
 
-export const AppCard = ({ book }) => {
+export const AppCard = ({ book, onClick }) => {
   const avatarBG = useColorModeValue("teal.300", "teal.500");
-
   return (
     <Card
       maxW="200px"
@@ -46,23 +47,32 @@ export const AppCard = ({ book }) => {
             {book.name}
           </Text>
           <Avatar
-            src="/assets/images/me.png"
+            src={`/assets/images/${book.user.photo}`}
             position="absolute"
             top="5px"
             right="5px"
             size="lg"
             p={1}
             bg={avatarBG}
-          />
+          ></Avatar>
         </Box>
-        <Stack gap={2} pt="2">
-          <Text colorScheme="teal" fontSize="2xl">
-            {book.price}€
-          </Text>
-          <Text colorScheme="teal" fontSize="lg">
-            {book.name}
-          </Text>
-        </Stack>
+        <Flex justifyContent="space-between" alignItems="center" gap={4} px={2}>
+          <Stack gap={2} pt="2">
+            <Text colorScheme="teal" fontSize="2xl">
+              {book.price}€
+            </Text>
+            <Text colorScheme="teal" fontSize="lg">
+              {book.name}
+            </Text>
+          </Stack>
+          <ChatIcon
+            _hover={{ transform: "scale(1.2)" }}
+            _active={{ transform: "scale(1)" }}
+            cursor="pointer"
+            transition={"transform 0.2s"}
+            onClick={() => onClick(book.user_id)}
+          />
+        </Flex>
       </CardBody>
     </Card>
   );

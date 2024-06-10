@@ -1,5 +1,6 @@
 const DataTypes = require("sequelize");
 const db = require("../config/db");
+const User = require("./user");
 
 const Book = db.define(
   "book",
@@ -7,6 +8,14 @@ const Book = db.define(
     book_id: {
       type: DataTypes.TINYINT,
       primaryKey: true,
+    },
+
+    user_id: {
+      type: DataTypes.TINYINT,
+      references: {
+        model: User,
+        key: "user_id",
+      },
     },
 
     name: {

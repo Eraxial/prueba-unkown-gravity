@@ -10,6 +10,7 @@ export const Home = () => {
   const [filteredBooks, setFilteredBooks] = useState();
   const [filter, setFilter] = useState("");
   const [showChat, setShowChat] = useState(false);
+  const [selectedUser, setSelectedUser] = useState();
 
   useEffect(() => {
     axios
@@ -38,20 +39,33 @@ export const Home = () => {
     }
   };
 
+  const selectUser = user => {
+    setSelectedUser(user);
+    setShowChat(true);
+  };
+
   const openChat = () => {
     setShowChat(true);
   };
 
   const closeChat = () => {
     setShowChat(false);
+    setSelectedUser();
   };
+
+  console.log(selectedUser);
 
   return (
     <main>
       <Land />
       <Searcher filter={filter} onChange={handleWrite} search={searchBooks} />
-      <BookList books={filteredBooks} />
-      <Chat show={showChat} onOpen={openChat} onClose={closeChat} />
+      <BookList books={filteredBooks} onClick={selectUser} />
+      <Chat
+        show={showChat}
+        onOpen={openChat}
+        onClose={closeChat}
+        selectedUser={selectedUser}
+      />
     </main>
   );
 };
