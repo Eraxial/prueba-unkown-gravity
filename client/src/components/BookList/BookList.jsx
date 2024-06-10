@@ -3,7 +3,7 @@ import { Container, Grid } from "@chakra-ui/react";
 import { AppCard } from "../Card/AppCard";
 
 // Componente que muestra la lista de todos los libros que hay en la web
-export const BookList = ({ books }) => {
+export const BookList = ({ books, onClick }) => {
   return (
     <Container maxW="8xl" pt={{ base: "64px", md: "0" }}>
       <Grid
@@ -19,7 +19,7 @@ export const BookList = ({ books }) => {
       >
         {books &&
           books.map(book => {
-            return <AppCard key={book.book_id} book={book} />;
+            return <AppCard key={book.book_id} book={book} onClick={onClick} />;
           })}
       </Grid>
     </Container>

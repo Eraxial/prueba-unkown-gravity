@@ -1,6 +1,6 @@
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 const db = require("../config/db");
-const Conversation = require("../models/conversation");
+const { Conversation } = require("../models/index");
 const Message = require("../models/message");
 
 class ChatController {
@@ -11,33 +11,33 @@ class ChatController {
   getConversations = async (req, res) => {
     const { user_id } = req.params;
 
-    const convers = await Message.findAll({
-      where: {
-        [Op.or]: [{ user_id: user_id }, { receptor_user_id: user_id }],
-      },
-      order: [
-        ["conversation_id", "ASC"],
-        ["send_date", "ASC"],
-      ],
-    });
+    try {
+      const convers = await Conversation.findAll({
+        where: {
+          user_id: user_id,
+        },
+        include: [
+          {
+            model: Message,
+            where: {
+              conversation_id: Sequelize.col("conversation.conversation_id"), // Filtrar por el mismo conversation_id
+            },
+          },
+        ],
+      });
 
-    const groupedMessages = [];
+      res.send(convers);
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+      res
+        .status(500)
+        .send({ error: "An error occurred while fetching conversations." });
+    }
+  };
 
-    // Iteramos sobre los resultados para agrupar los mensajes por conversation_id
-    convers.forEach(message => {
-      const index = groupedMessages.findIndex(
-        item => item.conversation_id === message.conversation_id
-      );
-      if (index === -1) {
-        groupedMessages.push({
-          conversation_id: message.conversation_id,
-          messages: [message],
-        });
-      } else {
-        groupedMessages[index].messages.push(message);
-      }
-    });
-    res.send(groupedMessages);
+  sendMessage = async (req, res) => {
+    await Message.create(req.body);
+    res.send("ok");
   };
 }
 

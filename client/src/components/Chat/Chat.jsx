@@ -23,7 +23,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { format, parse } from "@formkit/tempo";
 
-export const Chat = ({ show, onOpen, onClose }) => {
+export const Chat = ({ show, onOpen, onClose, selectedUser }) => {
   const chatColors = useColorModeValue("teal.200", "teal.600");
   const [showConversation, setShowConversation] = useState(false);
   const [selectedConversation, setSelectedConversation] = useState();
@@ -31,6 +31,8 @@ export const Chat = ({ show, onOpen, onClose }) => {
   const [message, setMessage] = useState("");
   const { colorMode } = useColorMode();
   const user = useSelector(state => state.user);
+
+  console.log(selectedConversation);
 
   const messageContainerRef = useRef();
 
@@ -54,15 +56,21 @@ export const Chat = ({ show, onOpen, onClose }) => {
         messageContainerRef.current.scrollHeight;
     }
 
-    if (event.key === "Enter") {
+    if (event.key === "Enter" && message !== "") {
       const l = "en";
       const t = new Date();
       const now = format(t, "YYYY-MM-DDTHH:mm:ss", l);
 
+      console.log(selectedConversation);
+
+      //TODO
+      //Tengo que hacer que cuando se elija una foto, se abra el chat con una conversación nueva o la que ya tenía abierta
+      //Que recepto_user_id no sea siempre 4 y sea el id de la persona que elijo
+
       const msg = {
         conversation_id: selectedConversation.conversation_id,
         message_id: selectedConversation.messages.length + 1,
-        receptor_user_id: 4,
+        receptor_user_id: selectedConversation.receptor_user_id,
         send_date: now,
         text: message,
         user_id: user.user_id,
@@ -72,6 +80,12 @@ export const Chat = ({ show, onOpen, onClose }) => {
         ...selectedConversation,
         messages: [...selectedConversation.messages, msg],
       });
+
+      axios
+        .post("http://localhost:3000/chat/sendMessage", msg)
+        .then(res => console.log(res))
+        .catch(err => console.log(err));
+
       setMessage("");
     }
   };
@@ -80,9 +94,11 @@ export const Chat = ({ show, onOpen, onClose }) => {
   useEffect(() => {
     axios
       .get(`http://localhost:3000/chat/${user.user_id}`)
-      .then(res => setChat(res.data))
+      .then(res => {
+        setChat(res.data);
+      })
       .catch(err => console.log(err));
-  }, []);
+  }, [selectedUser]);
 
   return (
     // Esto muestra un icono que ponemos fixed en la parte de abajo de la web de facil acceso
