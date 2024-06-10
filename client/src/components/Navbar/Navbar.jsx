@@ -52,6 +52,8 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  console.log(user);
+
   const handleLogout = () => {
     dispatch(logout());
     localStorage.removeItem("token");
@@ -120,7 +122,11 @@ export default function Navbar() {
                     cursor={"pointer"}
                     minW={0}
                   >
-                    <Avatar size={"md"} src={"/assets/images/me.png"} />
+                    <Avatar
+                      size={"md"}
+                      src={`/assets/images/${user?.photo}`}
+                      colorScheme="teal"
+                    />
                   </MenuButton>
                   <MenuList>
                     <MenuItem>Link 1</MenuItem>

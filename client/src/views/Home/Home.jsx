@@ -4,6 +4,7 @@ import { Land } from "../../components/Land/Land";
 import { BookList } from "../../components/BookList/BookList";
 import { Searcher } from "../../components/Searcher/Searcher";
 import { Chat } from "../../components/Chat/Chat";
+import { useSelector } from "react-redux";
 
 export const Home = () => {
   const [books, setBooks] = useState();
@@ -11,6 +12,7 @@ export const Home = () => {
   const [filter, setFilter] = useState("");
   const [showChat, setShowChat] = useState(false);
   const [selectedUser, setSelectedUser] = useState();
+  const user = useSelector(state => state.user);
 
   useEffect(() => {
     axios
@@ -40,7 +42,11 @@ export const Home = () => {
   };
 
   const selectUser = user => {
-    setSelectedUser(user);
+    axios
+      .get(`http://localhost:3000/users/${user}`)
+      .then(res => setSelectedUser(res.data))
+      .catch(err => console.log(err));
+
     setShowChat(true);
   };
 
@@ -60,12 +66,14 @@ export const Home = () => {
       <Land />
       <Searcher filter={filter} onChange={handleWrite} search={searchBooks} />
       <BookList books={filteredBooks} onClick={selectUser} />
-      <Chat
-        show={showChat}
-        onOpen={openChat}
-        onClose={closeChat}
-        selectedUser={selectedUser}
-      />
+      {user.user_id !== "" && (
+        <Chat
+          show={showChat}
+          onOpen={openChat}
+          onClose={closeChat}
+          selectedUser={selectedUser}
+        />
+      )}
     </main>
   );
 };

@@ -1,10 +1,5 @@
 /* eslint-disable react/prop-types */
-import {
-  ArrowBackIcon,
-  ArrowRightIcon,
-  ChatIcon,
-  Search2Icon,
-} from "@chakra-ui/icons";
+import { ArrowBackIcon, ArrowRightIcon, ChatIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Box,
@@ -21,24 +16,25 @@ import {
 import axios from "axios";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { format, parse } from "@formkit/tempo";
+import { format } from "@formkit/tempo";
 
 export const Chat = ({ show, onOpen, onClose, selectedUser }) => {
   const chatColors = useColorModeValue("teal.200", "teal.600");
   const [showConversation, setShowConversation] = useState(false);
-  const [selectedConversation, setSelectedConversation] = useState();
-  const [chat, setChat] = useState();
+  const [selectedConversation, setSelectedConversation] = useState([]);
+  const [chat, setChat] = useState([]);
   const [message, setMessage] = useState("");
   const { colorMode } = useColorMode();
   const user = useSelector(state => state.user);
 
-  console.log(selectedConversation);
-
   const messageContainerRef = useRef();
+
+  console.log("messssssssa", selectedConversation);
 
   const selectConversation = conv => {
     setSelectedConversation(conv);
     setShowConversation(true);
+    console.log(conv);
   };
 
   const closeChat = () => {
@@ -51,34 +47,33 @@ export const Chat = ({ show, onOpen, onClose, selectedUser }) => {
   };
 
   const sendMessage = event => {
-    if (messageContainerRef.current) {
-      messageContainerRef.current.scrollTop =
-        messageContainerRef.current.scrollHeight;
-    }
-
     if (event.key === "Enter" && message !== "") {
+      if (messageContainerRef.current) {
+        messageContainerRef.current.scrollTop =
+          messageContainerRef.current.scrollHeight;
+      }
+
       const l = "en";
       const t = new Date();
       const now = format(t, "YYYY-MM-DDTHH:mm:ss", l);
 
-      console.log(selectedConversation);
-
-      //TODO
-      //Tengo que hacer que cuando se elija una foto, se abra el chat con una conversación nueva o la que ya tenía abierta
-      //Que recepto_user_id no sea siempre 4 y sea el id de la persona que elijo
-
       const msg = {
         conversation_id: selectedConversation.conversation_id,
-        message_id: selectedConversation.messages.length + 1,
         receptor_user_id: selectedConversation.receptor_user_id,
         send_date: now,
         text: message,
         user_id: user.user_id,
       };
 
+      // Asegurarse de que selectedConversation.messages sea un array
+      const updatedMessages = Array.isArray(selectedConversation.messages)
+        ? [...selectedConversation.messages, msg]
+        : [msg];
+
+      // Actualizar selectedConversation con el nuevo array de mensajes
       setSelectedConversation({
         ...selectedConversation,
-        messages: [...selectedConversation.messages, msg],
+        messages: updatedMessages,
       });
 
       axios
@@ -90,43 +85,58 @@ export const Chat = ({ show, onOpen, onClose, selectedUser }) => {
     }
   };
 
-  //Traemos las conversaciones desde la base de datos
-  useEffect(() => {
+  const onAppear = () => {
     axios
       .get(`http://localhost:3000/chat/${user.user_id}`)
       .then(res => {
         setChat(res.data);
+
         if (selectedUser) {
-          const openConv = chat.filter(
-            conv => conv.receptor_user_id === selectedUser
-          );
+          const openConv =
+            (res.data.conversations &&
+              res.data.conversations.filter(
+                conv => conv.receptor_user_id === selectedUser.user_id
+              )) ||
+            [];
+
+          console.log(openConv);
+
           if (openConv.length > 0) {
             setSelectedConversation(openConv[0]);
             setShowConversation(true);
           } else {
             const newConv = {
-              conversation_id: chat.length + 1,
+              conversation_id: 1,
               user_id: user.user_id,
-              receptor_user_id: selectedUser,
+              receptor_user_id: selectedUser.user_id,
+              user: { photo: user.photo },
+              receptor: { photo: selectedUser.photo, name: selectedUser.name },
               messages: [],
             };
+
             setSelectedConversation(newConv);
             setShowConversation(true);
 
             axios
               .post("http://localhost:3000/chat/addConversation", newConv)
-              .then(res => console.log(res))
+              .then(res => {
+                console.log(res);
+                // Actualizar el estado `chat` con la nueva conversación
+                setChat(prevChat => [...prevChat, newConv]);
+              })
               .catch(err => console.log(err));
 
             console.log(newConv);
-            setChat([...chat, newConv]);
           }
         }
       })
       .catch(err => console.log(err));
-  }, [selectedUser]);
+  };
 
-  console.log("CHAAAAAT", chat);
+  //Traemos las conversaciones desde la base de datos
+  useEffect(() => {
+    onAppear();
+  }, [selectedUser]);
 
   return (
     // Esto muestra un icono que ponemos fixed en la parte de abajo de la web de facil acceso
@@ -175,22 +185,27 @@ export const Chat = ({ show, onOpen, onClose, selectedUser }) => {
                 h="352px"
                 overflowY="auto"
                 bottom="0"
-                bg={colorMode === "dark" ? "gray.700" : "white"}
+                bg={colorMode === "dark" ? "gray.700" : "gray.100"}
                 minH="351px"
                 borderRadius="0 0 8px 8px"
               >
-                {chat?.map(conv => {
+                {chat.conversations?.map(conv => {
                   return (
                     <Box
-                      key={conv.conversation_id}
+                      key={`${conv.receptor_user_id}`}
                       mx={2}
                       px={2}
                       py={2}
                       borderRadius="md"
-                      bg="gray"
+                      bg={colorMode === "dark" ? "teal.600" : "teal.200"}
                       onClick={() => selectConversation(conv)}
                     >
-                      {conv.conversation_id}
+                      <Flex alignItems="center" gap={3}>
+                        <Avatar src={`/assets/images/${conv.receptor.photo}`} />
+                        <Text colorScheme="teal" fontWeight="bold">
+                          {conv.receptor.name}
+                        </Text>
+                      </Flex>
                     </Box>
                   );
                 })}
@@ -202,7 +217,7 @@ export const Chat = ({ show, onOpen, onClose, selectedUser }) => {
               <Stack
                 ref={messageContainerRef}
                 p={2}
-                bg={colorMode === "dark" ? "gray.700" : "white"}
+                bg={colorMode === "dark" ? "gray.700" : "gray.100"}
                 h="352px"
                 overflowY="auto"
                 gap={2}
@@ -226,10 +241,11 @@ export const Chat = ({ show, onOpen, onClose, selectedUser }) => {
                   />
                 </Box>
                 {/* Aquí listamos todos los mensajes del usuario  */}
-                {selectedConversation?.messages.map(mess => {
+                {selectedConversation?.messages?.map(mess => {
+                  console.log(user.user_id);
                   return (
                     <Flex
-                      key={mess.message_id}
+                      key={mess.message_id + mess.send_date}
                       justifyContent="flex-start"
                       alignItems="center"
                       flexDirection={
@@ -237,11 +253,24 @@ export const Chat = ({ show, onOpen, onClose, selectedUser }) => {
                       }
                       gap={3}
                       p={2}
-                      bg="teal.500"
+                      bg={colorMode === "dark" ? "teal.500" : "teal.200"}
                       borderRadius="3xl"
                     >
-                      <Avatar size="xs" />
-                      <Text textAlign="end">{mess.text}</Text>
+                      <Avatar
+                        size="xs"
+                        src={`/assets/images/${
+                          mess.user_id === user.user_id
+                            ? selectedConversation.user.photo
+                            : selectedConversation.receptor.photo
+                        }`}
+                      />
+                      <Text
+                        textAlign={
+                          mess.user_id === user.user_id ? "end" : "start"
+                        }
+                      >
+                        {mess.text}
+                      </Text>
                     </Flex>
                   );
                 })}

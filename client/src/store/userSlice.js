@@ -6,6 +6,7 @@ let initialState = {
   user_id: "",
   email: "",
   name: "",
+  photo: "",
 };
 
 const token = localStorage.getItem("token");
@@ -16,11 +17,13 @@ if (token) {
   await axios
     .get(`http://localhost:3000/users/${user_id.user_id}`)
     .then(res => {
-      const { user_id, email, name } = res.data;
+      console.log(res.data);
+      const { user_id, email, name, photo } = res.data;
       initialState = {
         user_id: user_id,
         email: email,
         name: name,
+        photo: photo,
       };
     })
     .catch(err => console.log(err));

@@ -1,6 +1,5 @@
 const DataTypes = require("sequelize");
 const db = require("../config/db");
-const Book = require("./book");
 
 const User = db.define(
   "user",
@@ -23,6 +22,10 @@ const User = db.define(
       type: DataTypes.STRING,
     },
 
+    photo: {
+      type: DataTypes.STRING,
+    },
+
     is_verified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -36,19 +39,7 @@ const User = db.define(
   {
     tableName: "user",
     timestamps: false,
-    instanceMethods: {
-      generateHash(password) {
-        return bcrypt.hash(password, bcrypt.genSaltSync(8));
-      },
-      validPassword(password) {
-        return bcrypt.compare(password, this.password);
-      },
-    },
   }
 );
-
-const generateHash = password => {
-  return bcrypt.hash(password, bcrypt.genSaltSync(8));
-};
 
 module.exports = User;
