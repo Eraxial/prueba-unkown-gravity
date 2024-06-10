@@ -4,7 +4,7 @@ const Book = require("./book");
 const Conversation = require("./conversation");
 const Message = require("./message");
 
-// Define las asociaciones
+// Define las asociaciones, aquí se sabe las contraints de las bases de datos
 User.hasMany(Book, { foreignKey: "user_id" });
 Book.belongsTo(User, { foreignKey: "user_id" });
 Conversation.hasMany(Message, { foreignKey: "conversation_id" });

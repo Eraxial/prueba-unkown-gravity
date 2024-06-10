@@ -1,6 +1,5 @@
 const { Op, Sequelize } = require("sequelize");
-const db = require("../config/db");
-const { Conversation } = require("../models/index");
+const { Conversation, db } = require("../models/index");
 const Message = require("../models/message");
 
 class ChatController {
@@ -38,6 +37,18 @@ class ChatController {
   sendMessage = async (req, res) => {
     await Message.create(req.body);
     res.send("ok");
+  };
+
+  addConversation = async (req, res) => {
+    const { conversation_id, user_id, receptor_user_id } = req.body;
+
+    console.log(conversation_id, user_id, receptor_user_id);
+
+    await Conversation.create({
+      conversation_id: conversation_id,
+      user_id: user_id,
+      receptor_user_id: receptor_user_id,
+    });
   };
 }
 

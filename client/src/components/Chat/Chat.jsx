@@ -96,9 +96,37 @@ export const Chat = ({ show, onOpen, onClose, selectedUser }) => {
       .get(`http://localhost:3000/chat/${user.user_id}`)
       .then(res => {
         setChat(res.data);
+        if (selectedUser) {
+          const openConv = chat.filter(
+            conv => conv.receptor_user_id === selectedUser
+          );
+          if (openConv.length > 0) {
+            setSelectedConversation(openConv[0]);
+            setShowConversation(true);
+          } else {
+            const newConv = {
+              conversation_id: chat.length + 1,
+              user_id: user.user_id,
+              receptor_user_id: selectedUser,
+              messages: [],
+            };
+            setSelectedConversation(newConv);
+            setShowConversation(true);
+
+            axios
+              .post("http://localhost:3000/chat/addConversation", newConv)
+              .then(res => console.log(res))
+              .catch(err => console.log(err));
+
+            console.log(newConv);
+            setChat([...chat, newConv]);
+          }
+        }
       })
       .catch(err => console.log(err));
   }, [selectedUser]);
+
+  console.log("CHAAAAAT", chat);
 
   return (
     // Esto muestra un icono que ponemos fixed en la parte de abajo de la web de facil acceso
