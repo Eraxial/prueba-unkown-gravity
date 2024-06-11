@@ -29,12 +29,12 @@ export const Chat = ({ show, onOpen, onClose, selectedUser }) => {
 
   const messageContainerRef = useRef();
 
-  console.log("messssssssa", selectedConversation);
+  /* const chatReceptorPhoto =
+    chat.conversations[selectedConversation.conversation_id]; */
 
   const selectConversation = conv => {
     setSelectedConversation(conv);
     setShowConversation(true);
-    console.log(conv);
   };
 
   const closeChat = () => {
@@ -98,8 +98,6 @@ export const Chat = ({ show, onOpen, onClose, selectedUser }) => {
                 conv => conv.receptor_user_id === selectedUser.user_id
               )) ||
             [];
-
-          console.log(openConv);
 
           if (openConv.length > 0) {
             setSelectedConversation(openConv[0]);
@@ -203,7 +201,9 @@ export const Chat = ({ show, onOpen, onClose, selectedUser }) => {
                       <Flex alignItems="center" gap={3}>
                         <Avatar src={`/assets/images/${conv.receptor.photo}`} />
                         <Text colorScheme="teal" fontWeight="bold">
-                          {conv.receptor.name}
+                          {conv.user_id === user.user_id
+                            ? conv.receptor.name
+                            : conv.user.name}
                         </Text>
                       </Flex>
                     </Box>
@@ -242,7 +242,6 @@ export const Chat = ({ show, onOpen, onClose, selectedUser }) => {
                 </Box>
                 {/* Aquí listamos todos los mensajes del usuario  */}
                 {selectedConversation?.messages?.map(mess => {
-                  console.log(user.user_id);
                   return (
                     <Flex
                       key={mess.message_id + mess.send_date}
@@ -260,7 +259,7 @@ export const Chat = ({ show, onOpen, onClose, selectedUser }) => {
                         size="xs"
                         src={`/assets/images/${
                           mess.user_id === user.user_id
-                            ? selectedConversation.user.photo
+                            ? user.photo
                             : selectedConversation.receptor.photo
                         }`}
                       />

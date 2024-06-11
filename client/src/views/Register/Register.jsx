@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const initialState = {
   email: "",
@@ -19,6 +20,7 @@ const initialState = {
 const Register = () => {
   const formBackground = useColorModeValue("gray.100", "gray.700");
   const [user, setUser] = useState(initialState);
+  const navigate = useNavigate();
 
   // Método que actualiza el estado de user el cual se manda al back para registrar al usuario
   const handleChange = e => {
@@ -33,9 +35,7 @@ const Register = () => {
       .post("http://localhost:3000/users/register", user)
       .then(res => {
         console.log(res);
-        if (res.status === 200) {
-          /* navigate('/login') */
-        }
+        navigate("/register/successful");
       })
       .catch(err => console.log(err));
   };
