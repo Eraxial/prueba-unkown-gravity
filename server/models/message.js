@@ -7,43 +7,38 @@ const Message = db.define(
   "message",
   {
     message_id: {
-      type: DataTypes.TINYINT,
+      type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
     },
-
     conversation_id: {
-      type: DataTypes.TINYINT,
-      primaryKey: true,
+      type: DataTypes.INTEGER,
       references: {
         model: Conversation,
         key: "conversation_id",
       },
     },
-
     user_id: {
-      type: DataTypes.TINYINT,
-      primaryKey: true,
+      type: DataTypes.INTEGER,
       references: {
         model: User,
         key: "user_id",
       },
     },
-
     receptor_user_id: {
-      type: DataTypes.TINYINT,
-      primaryKey: true,
+      type: DataTypes.INTEGER,
       references: {
         model: User,
         key: "user_id",
       },
     },
-
     text: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
-
     send_date: {
       type: DataTypes.DATE,
+      allowNull: false,
     },
   },
   {

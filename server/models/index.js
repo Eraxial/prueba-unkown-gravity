@@ -31,7 +31,6 @@ Message.belongsTo(Conversation, {
   as: "conversation",
   foreignKey: "conversation_id",
 });
-
 Message.belongsTo(User, { as: "sender", foreignKey: "user_id" });
 Message.belongsTo(User, { as: "receiver", foreignKey: "receptor_user_id" });
 

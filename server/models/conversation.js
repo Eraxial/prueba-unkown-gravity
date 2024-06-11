@@ -6,25 +6,22 @@ const Conversation = db.define(
   "conversation",
   {
     conversation_id: {
-      type: DataTypes.TINYINT,
+      type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
     },
-
     user_id: {
-      type: DataTypes.TINYINT,
-      primaryKey: true,
+      type: DataTypes.INTEGER,
       references: {
         model: User,
         key: "user_id",
       },
     },
-
     receptor_user_id: {
-      type: DataTypes.TINYINT,
-      primaryKey: true,
+      type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "receptor_user_id",
+        key: "user_id",
       },
     },
   },
@@ -33,5 +30,4 @@ const Conversation = db.define(
     timestamps: false,
   }
 );
-
 module.exports = Conversation;

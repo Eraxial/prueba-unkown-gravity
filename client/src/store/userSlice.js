@@ -34,15 +34,17 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     addUser: (state, action) => {
-      const { user_id, name, email } = action.payload;
+      const { user_id, name, email, photo } = action.payload;
       state.user_id = user_id;
       state.name = name;
       state.email = email;
+      state.photo = photo;
     },
     logout: state => {
       state.user_id = "";
       state.name = "";
       state.email = "";
+      state.photo = "";
     },
   },
 });

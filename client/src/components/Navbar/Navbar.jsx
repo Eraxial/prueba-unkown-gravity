@@ -19,6 +19,7 @@ import {
   Container,
   ButtonGroup,
   useColorMode,
+  Image,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon, SunIcon, MoonIcon } from "@chakra-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -78,7 +79,14 @@ export default function Navbar() {
               onClick={isOpen ? onClose : onOpen}
             />
             <HStack spacing={8} alignItems={"center"}>
-              <Box onClick={() => navigate("/")}>Logo</Box>
+              <Box onClick={() => navigate("/")}>
+                <Image
+                  h="50px"
+                  src="/assets/images/logo.png"
+                  alt="Logo"
+                  cursor="pointer"
+                />
+              </Box>
               <HStack
                 as={"nav"}
                 spacing={4}
@@ -113,7 +121,7 @@ export default function Navbar() {
                   _hover={{ bg: "teal.500", color: "white" }}
                 />
               )}
-              {user.user_id !== "" && (
+              {user?.user_id !== "" && (
                 <Menu>
                   <MenuButton
                     as={Button}
@@ -129,15 +137,12 @@ export default function Navbar() {
                     />
                   </MenuButton>
                   <MenuList>
-                    <MenuItem>Link 1</MenuItem>
-                    <MenuItem>Link 2</MenuItem>
-                    <MenuDivider />
                     <MenuItem onClick={handleLogout}>Logout</MenuItem>
                   </MenuList>
                 </Menu>
               )}
 
-              {user.user_id === "" && (
+              {user?.user_id === "" && (
                 <ButtonGroup alignItems="center">
                   <Button
                     colorScheme="teal"

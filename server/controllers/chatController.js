@@ -11,64 +11,100 @@ class ChatController {
     const { user_id } = req.params;
 
     try {
-      // Verificar si el usuario existe
-      const userExists = await User.findByPk(user_id, {
+      const user = await User.findByPk(user_id, {
         attributes: ["user_id", "photo"],
-      });
-
-      if (!userExists) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      // Obtener las conversaciones del usuario
-      const conversations = await Conversation.findAll({
-        where: {
-          [Op.or]: [{ user_id: user_id }, { receptor_user_id: user_id }],
-        },
         include: [
           {
-            model: User,
-            as: "user",
-            attributes: ["photo"],
-          },
-          {
-            model: User,
-            as: "receptor",
-            attributes: ["photo", "name"],
-          },
-          {
-            model: Message,
-            as: "messages",
+            model: Conversation,
+            as: "conversations",
             include: [
               {
                 model: User,
-                as: "sender",
-                attributes: ["photo"],
+                as: "receptor",
+                attributes: ["photo", "name"],
               },
               {
+                model: Message,
+                as: "messages",
+                where: {
+                  [Op.or]: [
+                    { user_id: user_id },
+                    { receptor_user_id: user_id },
+                  ],
+                },
+                attributes: [
+                  "message_id",
+                  "conversation_id",
+                  "user_id",
+                  "receptor_user_id",
+                  "text",
+                  "send_date",
+                ],
+              },
+            ],
+          },
+          {
+            model: Conversation,
+            as: "receivedConversations",
+            include: [
+              {
                 model: User,
-                as: "receiver",
+                as: "user",
                 attributes: ["photo", "name"],
+              },
+              {
+                model: Message,
+                as: "messages",
+                where: {
+                  [Op.or]: [
+                    { user_id: user_id },
+                    { receptor_user_id: user_id },
+                  ],
+                },
+                attributes: [
+                  "message_id",
+                  "conversation_id",
+                  "user_id",
+                  "receptor_user_id",
+                  "text",
+                  "send_date",
+                ],
               },
             ],
           },
         ],
       });
 
-      // Filtrar las conversaciones para incluir solo las que tienen mensajes relacionados con el usuario
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Combinar y filtrar las conversaciones
+      const conversations = [
+        ...user.conversations,
+        ...user.receivedConversations,
+      ];
+
       const filteredConversations = conversations.map(conversation => {
         const filteredMessages = conversation.messages.filter(
           message =>
             message.user_id === parseInt(user_id) ||
             message.receptor_user_id === parseInt(user_id)
         );
+
         return {
           ...conversation.toJSON(),
           messages: filteredMessages,
         };
       });
 
-      res.json({ user: userExists, conversations: filteredConversations });
+      const response = {
+        user_id: user.user_id,
+        photo: user.photo,
+        conversations: filteredConversations,
+      };
+
+      res.json(response);
     } catch (error) {
       console.error("Error getting conversations:", error);
       res.status(500).json({ error: "Internal server error" });
@@ -126,16 +162,12 @@ class ChatController {
     console.log(req.body);
 
     try {
-      const maxMessageId = await Message.max("message_id", {
-        where: {
-          conversation_id,
-          user_id,
-          receptor_user_id,
-        },
-      });
+      const maxMessageId = await Message.max("message_id");
 
-      const message = await Message.create({
-        message_id: maxMessageId + 1,
+      console.log("********************", maxMessageId);
+
+      await Message.create({
+        message_id: maxMessageId === null ? 1 : maxMessageId + 1,
         conversation_id: conversation_id,
         user_id: user_id,
         receptor_user_id: receptor_user_id,
@@ -143,7 +175,7 @@ class ChatController {
         send_date: send_date,
       });
 
-      res.status(201).json(message);
+      // res.status(201).json(message);
     } catch (error) {
       console.error("Error sending message:", error);
       res.status(500).json({ error: "Internal server error" });
@@ -152,8 +184,6 @@ class ChatController {
 
   addConversation = async (req, res) => {
     const { conversation_id, user_id, receptor_user_id } = req.body;
-
-    console.log(conversation_id, user_id, receptor_user_id);
 
     await Conversation.create({
       conversation_id: conversation_id,
